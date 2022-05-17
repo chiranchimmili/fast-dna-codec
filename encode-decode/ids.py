@@ -2,7 +2,7 @@ import random
 
 def idsSim(string):
     randomInt = random.randint(0, 2)
-    randomPos = random.randint(0, len(string))
+    randomPos = random.randint(0, len(string) - 1)
     if randomInt == 0:
         string = insert(string, randomPos)
     elif randomInt == 1:
@@ -11,7 +11,6 @@ def idsSim(string):
         string = substition(string, randomPos)
     return string
 
-
 def insert(string, position):
     return string[:position] + randomBase() + string[position + 1:]
 
@@ -19,11 +18,10 @@ def delete(string, position):
     return string[:position] + string[position + 1:]
 
 def substition(string, position):
-    return string[:position - 1] + randomBase() + string[position + 1:]
+    return string[:position] + randomBase() + string[position + 1:]
 
 def randomBase():
     return random.choice(["A", "T", "C", "G"])
-
 
 def main():
     string = "ATGCATGC"
