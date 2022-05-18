@@ -23,8 +23,9 @@ def substition(string, position):
 def randomBase():
     return random.choice(["A", "T", "C", "G"])
 
-def main():
-    string = "ATGCATGC"
-    print(idsSim(string))
+def idsOccurence(string, percentage):
+    if random.random() < percentage:
+        string = idsSim(string)
+    return string
 
-main()
+print(idsOccurence("ATCGATCG", 0.2))
