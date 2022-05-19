@@ -1,6 +1,6 @@
 #include <string>
 using std::string;
 
-string stringToBinary(string str);
+string encode(string str);
 
-string parityAdd(string str);
+string decode(string binary);
