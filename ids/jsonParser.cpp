@@ -27,8 +27,11 @@ void jsonParser::numReads() {
 void jsonParser::inputFile() {
     jsonParser::input = j["simulation"]["files"]["input"];
 }
-void jsonParser::outputFile() {
-    jsonParser::output = j["simulation"]["files"]["output"];
+void jsonParser::unorderedOutputFile() {
+    jsonParser::unorderedOutput = j["simulation"]["files"]["unorderedOutput"];
+}
+void jsonParser::orderedOutputFile() {
+    jsonParser::orderedOutput = j["simulation"]["files"]["orderedOutput"];
 }
 void jsonParser::setParameters() {
     insertError();
@@ -36,5 +39,6 @@ void jsonParser::setParameters() {
     substitutionError();
     numReads();
     inputFile();
-    outputFile();
+    unorderedOutputFile();
+    orderedOutputFile();
 }

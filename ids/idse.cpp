@@ -19,10 +19,11 @@ int main() {
     parser->parseFile("sample.json");
 
     ifstream inFile;
-    ofstream outFile;
+    ofstream unorderedOutFile;
+    ofstream orderedOutFile;
 
     vector<string> populatedOligos = generateOligosVector(inFile);
-    generateOutputFile(outFile, populatedOligos);
+    generateOutputFiles(unorderedOutFile, orderedOutFile, populatedOligos);
 }
 
 vector<string> generateOligosVector(ifstream &inFile) {
@@ -39,14 +40,23 @@ vector<string> generateOligosVector(ifstream &inFile) {
     return oligos;
 }
 
-void generateOutputFile(ofstream &outFile, vector<string> oligos) {
-    outFile.open(parser->output, ios::out | ios::trunc);
+void generateOutputFiles(ofstream &unorderedOutFile, ofstream &orderedOutFile, vector<string> oligos) {
+    unorderedOutFile.open(parser->unorderedOutput, ios::out | ios::trunc);
+    orderedOutFile.open(parser->orderedOutput, ios::out | ios::trunc);
+    vector<pair<int, string>> ordered;
+
     for (int i = 0; i < parser->numberReads; i++) {
         int oligoNumber = randomOligo(generator);
         string errorStr = performIds(oligos[oligoNumber]);
-        outFile << ">" << oligoNumber << "\n" << errorStr << endl;
+        ordered.emplace_back(oligoNumber, errorStr);
+        unorderedOutFile << ">" << oligoNumber << "\n" << errorStr << endl;
     }
-    outFile.close();
+    sort(ordered.begin(), ordered.end());
+    for (int i = 0; i < ordered.size(); i++) {
+        orderedOutFile << ">" << ordered[i].first << "\n" << ordered[i].second << endl;
+    }
+    unorderedOutFile.close();
+    orderedOutFile.close();
 }
 
 int generateIdsType() {

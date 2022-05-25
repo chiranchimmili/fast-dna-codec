@@ -15,7 +15,8 @@ private:
 
 public:
     string input;
-    string output;
+    string unorderedOutput;
+    string orderedOutput;
     double insertErrorRate;
     double deleteErrorRate;
     double substitutionErrorRate;
@@ -27,7 +28,8 @@ public:
     void substitutionError();
     void numReads();
     void inputFile();
-    void outputFile();
+    void unorderedOutputFile();
+    void orderedOutputFile();
     void setParameters();
 };
 
