@@ -6,9 +6,11 @@
 using namespace std;
 using json = nlohmann::json;
 
+
 void jsonParser::parseFile(string file) {
     ifstream jsonFile(file);
     j = json::parse(jsonFile);
+    setParameters();
 }
 void jsonParser::insertError() {
     jsonParser::insertErrorRate = (double)j["simulation"]["error"]["insert"];

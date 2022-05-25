@@ -17,16 +17,15 @@ jsonParser *parser = new jsonParser();
 
 int main() {
     parser->parseFile("sample.json");
-    parser->setParameters();
 
     ifstream inFile;
     ofstream outFile;
 
-    vector<string> oligos = generateOligosVector(inFile, parser);
-    generateOutputFile(outFile, parser, oligos);
+    vector<string> populatedOligos = generateOligosVector(inFile);
+    generateOutputFile(outFile, populatedOligos);
 }
 
-vector<string> generateOligosVector(ifstream &inFile, jsonParser *parser) {
+vector<string> generateOligosVector(ifstream &inFile) {
     inFile.open(parser->input);
     string line;
     while (getline(inFile, line)) {
@@ -40,7 +39,7 @@ vector<string> generateOligosVector(ifstream &inFile, jsonParser *parser) {
     return oligos;
 }
 
-void generateOutputFile(ofstream &outFile, jsonParser *parser, vector<string> oligos) {
+void generateOutputFile(ofstream &outFile, vector<string> oligos) {
     outFile.open(parser->output, ios::out | ios::trunc);
     for (int i = 0; i < parser->numberReads; i++) {
         int oligoNumber = randomOligo(generator);
@@ -67,7 +66,7 @@ int generateIdsType() {
 string performIds(string str) {
     for (int i = 0; i < str.size(); i++) {
         int randIds = generateIdsType();
-        char randBas = randomBase();
+        char randBas = RANDOMBASE;
         if (randIds == 0) {
             str.insert(i, 1 , randBas);
             i++;
@@ -76,7 +75,7 @@ string performIds(string str) {
             i--;
         } else if (randIds == 2) {
             while (randBas == str[i]) {
-                randBas = randomBase();
+                randBas = RANDOMBASE;
             }
             str[i] = randBas;
         } else {
@@ -86,9 +85,6 @@ string performIds(string str) {
     return str;
 }
 
-char randomBase() {
-    return bases[rand() % 4];
-}
 
 
 
