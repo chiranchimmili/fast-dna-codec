@@ -3,53 +3,52 @@
 #include <string>
 #include <random>
 #include <vector>
-#include "idse.h"
+#include "../include/idse.h"
+#include "jsonParser.cpp"
 
 using namespace std;
 
+vector<string> oligos;
 random_device rand_dev;
 mt19937 generator(rand_dev());
 uniform_int_distribution<int> randomOligo(1, 274);
 uniform_int_distribution<int> randomIds(1, 100);
-
+jsonParser *parser = new jsonParser();
 
 int main() {
-    string input = "input.fafsta";
-    string output = "output.fafsta";
+    parser->parseFile("sample.json");
+    parser->setParameters();
+
     ifstream inFile;
     ofstream outFile;
+
+    vector<string> oligos = generateOligosVector(inFile, parser);
+    generateOutputFile(outFile, parser, oligos);
+}
+
+vector<string> generateOligosVector(ifstream &inFile, jsonParser *parser) {
+    inFile.open(parser->input);
     string line;
-
-    inFile.open(input);
-    outFile.open(output, ios::out | ios::trunc);
-
-    if (!inFile) {
-        cout << "input file does not exist" << endl;
-        return 0;
-    }
-  
-    vector<string> oligos(275);
-    int i = 0;
     while (getline(inFile, line)) {
         if (!line.empty()) {
             if (line[0] != '>') {
-                oligos[i] = line;
-                i++;
+                oligos.push_back(line);
             }
         }
     }
-
-    for (int i = 0; i < 1000; i++) {
-        int oligoNumber = randomOligo(generator);
-        string errorStr = performIds(oligos[oligoNumber]);
-        outFile << ">" << oligoNumber << endl;
-        outFile << errorStr << endl;;
-    }
-
     inFile.close();
-    outFile.close();
+    return oligos;
 }
 
+void generateOutputFile(ofstream &outFile, jsonParser *parser, vector<string> oligos) {
+    outFile.open(parser->output, ios::out | ios::trunc);
+    for (int i = 0; i < parser->numberReads; i++) {
+        int oligoNumber = randomOligo(generator);
+        string errorStr = performIds(oligos[oligoNumber]);
+        outFile << ">" << oligoNumber << "\n" << errorStr << endl;
+    }
+    outFile.close();
+}
 
 int generateIdsType() {
     int rnd = (double) randomIds(generator) / 100;
