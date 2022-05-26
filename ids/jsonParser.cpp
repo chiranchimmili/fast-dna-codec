@@ -6,10 +6,11 @@
 using namespace std;
 using json = nlohmann::json;
 
-void jsonParser::parseFile(string file) {
+void jsonParser::parseJSONFile(string file) {
     ifstream jsonFile(file);
     j = json::parse(jsonFile);
     setParameters();
+
 }
 void jsonParser::insertError() {
     jsonParser::insertErrorRate = (double)j["simulation"]["error"]["insert"];
@@ -21,7 +22,7 @@ void jsonParser::substitutionError() {
     jsonParser::substitutionErrorRate = (double)j["simulation"]["error"]["substitution"];
 }
 void jsonParser::numReads() {
-    jsonParser::numberReads = j["simulation"]["numReads"];
+    jsonParser::numberReads = j["simulation"]["oligos"]["numReads"];
 }
 void jsonParser::inputFile() {
     jsonParser::input = j["simulation"]["files"]["input"];
@@ -32,11 +33,19 @@ void jsonParser::unorderedOutputFile() {
 void jsonParser::orderedOutputFile() {
     jsonParser::orderedOutput = j["simulation"]["files"]["orderedOutput"];
 }
+void jsonParser::numOligos() {
+    jsonParser::numberOligos = j["simulation"]["oligos"]["numOligos"];
+}
+void jsonParser::lenOligos() {
+    jsonParser::lengthOligos = j["simulation"]["oligos"]["oligoLength"];
+}
 void jsonParser::setParameters() {
     insertError();
     deleteError();
     substitutionError();
     numReads();
+    numOligos();
+    lenOligos();
     inputFile();
     unorderedOutputFile();
     orderedOutputFile();

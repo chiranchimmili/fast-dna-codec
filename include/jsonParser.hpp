@@ -12,7 +12,7 @@ class jsonParser {
 
 private:
     json j;
-    
+
 public:
     string input;
     string unorderedOutput;
@@ -21,12 +21,16 @@ public:
     double deleteErrorRate;
     double substitutionErrorRate;
     int numberReads;
+    int numberOligos;
+    int lengthOligos;
 
-    void parseFile(string file);
+    void parseJSONFile(string file);
     void insertError();
     void deleteError();
     void substitutionError();
     void numReads();
+    void numOligos();
+    void lenOligos();
     void inputFile();
     void unorderedOutputFile();
     void orderedOutputFile();

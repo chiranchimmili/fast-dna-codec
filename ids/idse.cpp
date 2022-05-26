@@ -10,18 +10,6 @@ using namespace std;
 
 vector<string> oligos;
 int numOligos;
-jsonParser *parser = new jsonParser();
-
-int main() {
-    parser->parseFile("sample.json");
-
-    ifstream inFile;
-    ofstream unorderedOutFile;
-    ofstream orderedOutFile;
-
-    vector<string> populatedOligos = generateOligosVector(inFile);
-    generateOutputFiles(unorderedOutFile, orderedOutFile, populatedOligos);
-}
 
 vector<string> generateOligosVector(ifstream &inFile) {
     inFile.open(parser->input);         // Opens input FAFSTA file
@@ -47,7 +35,7 @@ int generateIdsType() {
         return 1;
     }
     else if (rnd > errorWeights[0] + errorWeights[1] && rnd <= errorWeights[0] + errorWeights[1] + errorWeights[2]) {
-        return 2;  // Substiution Error
+        return 2;  // Substitution Error
     }
     return 3;     // No Error
 }
