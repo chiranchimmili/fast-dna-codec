@@ -3,20 +3,23 @@
 #include <iostream>
 #include <random>
 #include <cstddef>
-#include <bitset>
 #include "raid.hpp"
  
 using namespace std;
 
+const int byteVectorLength = 10;
+
 
 int main() {
-    string str = "abcdfesdjlp3kdnaj501";;
+    // Static test
+    string str = "abcdfesdjlp3kdnaj501abcdfesdjlp3kdnaj501";
     vector<unsigned char> bytes;
     for (unsigned char c : str) {
         bytes.push_back(c);
     }
-    vector<vector<unsigned char>> encoded = encode(bytes, 5);
-    cout << decode(encoded, 5) << endl;
+    vector<vector<unsigned char>> encoded = encode(bytes, byteVectorLength);
+    encoded.erase(encoded.begin() + 1);
+    cout << decode(encoded, 1) << endl;
 }
 
 vector<vector<unsigned char>> encode(vector<unsigned char> bytes, int columns) {
@@ -43,16 +46,17 @@ vector<vector<unsigned char>> encode(vector<unsigned char> bytes, int columns) {
     return rows;
 }
 
-string decode(vector<vector<unsigned char>> encoded, int removed) {
-    int column = removed % 5;
-    int row = removed / 5;
-    encoded[row][column] = 0;
-    unsigned char xorByte;
-    for (int i = 0; i < encoded.size(); i++) {
-        //cout << static_cast<unsigned>(encoded[i][column]) << endl;
-        xorByte ^= encoded[i][column];
+string decode(vector<vector<unsigned char>> encoded, int removedByteVector) {
+
+    vector<unsigned char> xorRow;
+    for (int i = 0; i < encoded[i].size(); i++) {
+        unsigned char xorByte = static_cast<unsigned char>(0);
+        for (vector<unsigned char> v : encoded) {
+            xorByte ^= v[i];
+        }
+        xorRow.push_back(xorByte);
     }
-    encoded[row][column] = xorByte;
+    encoded.insert(encoded.begin() + removedByteVector, xorRow);
 
     string str = "";
     for (int i = 0; i < encoded.size() - 1; i++) {
