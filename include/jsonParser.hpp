@@ -12,7 +12,7 @@ class jsonParser {
 
 private:
     json j;
-
+    
 public:
     string input;
     string unorderedOutput;
