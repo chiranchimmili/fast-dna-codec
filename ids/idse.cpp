@@ -11,6 +11,8 @@ using namespace std;
 jsonParser *parser = new jsonParser();
 vector<string> oligos;
 
+/* Creates vector of oligo number and respective oligo string from given input fafsta file
+*/
 vector<string> generateOligosVector(ifstream &inFile) {
     // Opens input FAFSTA file
     inFile.open(parser->input);         
@@ -27,15 +29,16 @@ vector<string> generateOligosVector(ifstream &inFile) {
     return oligos;
 }
 
+/* Generates insertion, deletion, substitution, or no error depending on percent weights of each specified
+   by the user (in json)
+*/
 int generateIdsType() {
     double rnd = (double) randomIds(generator) / 100.0;
-
     // Map of indelsub error percentenages
     map<int, float> errorWeights = {
     {0, parser->insertErrorRate}, {1, parser->deleteErrorRate}, {2, parser->substitutionErrorRate}, 
     {3, 1 - parser->insertErrorRate - parser->deleteErrorRate - parser->substitutionErrorRate}
     };
-
     // Insert error
     if (rnd <= errorWeights[0]) {     
         return 0;
@@ -52,6 +55,8 @@ int generateIdsType() {
     return 3;    
 }
 
+/* Performs insertion, deletion, and substitution on an oligo string (applied to each base)
+*/
 string performIds(string str) {
     // Error applied to each base in oligo 
     for (int i = 0; i < str.size(); i++) {
@@ -80,6 +85,8 @@ string performIds(string str) {
     return str;
 }
 
+/* Creates ordered and unordered output files of oligo number and respective oligo string
+*/
 void generateOutputFiles(ofstream &unorderedOutFile, ofstream &orderedOutFile, vector<string> oligos) {
     // Open unordered and ordered files
     unorderedOutFile.open(parser->unorderedOutput, ios::out | ios::trunc);
@@ -107,8 +114,3 @@ void generateOutputFiles(ofstream &unorderedOutFile, ofstream &orderedOutFile, v
     unorderedOutFile.close();
     orderedOutFile.close();
 }
-
-
-
-
-

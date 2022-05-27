@@ -11,9 +11,9 @@
           "oligoLength": 200
         },
       "files":
-        { "input": "input.fafsta",
-          "unorderedOutput": "unorderedOutput.fafsta",
-          "orderedOutput": "orderedOutput.fafsta"
+        { "input": "../files/input.fafsta",
+          "unorderedOutput": "../files/unorderedOutput.fafsta",
+          "orderedOutput": "../files/orderedOutput.fafsta"
         }
   }
 }
