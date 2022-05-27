@@ -5,13 +5,13 @@
 using namespace std;
 
 
-
 random_device rand_dev;
 mt19937 generator(rand_dev());
-uniform_int_distribution<int> randomIds(1, 100);
+uniform_int_distribution<int> randomIdsDist(1, 100);
+uniform_int_distribution<int> randomBaseDist(0, 3);
 
 /* Macro that returns a random base from bases array */
-#define RANDOMBASE (bases[rand() % 4]);
+#define RANDOMBASE (bases[randomBaseDist(generator)]);
 
 /*
 Insertion = 0, with default error occurence of 0%
@@ -24,6 +24,6 @@ char bases[4] = {'A', 'T', 'C', 'G'};
 
 int generateIdsType();
 char randomBase();
-vector<string> generateOligosVector(ifstream &inFile);
-void generateOutputFiles(ofstream &unorderedOutFile, ofstream &orderedOutFile, vector<string> oligos);
+vector<string> generateOligosVector();
+void generateOutputFiles(vector<string> oligos);
 string performIds(string str);

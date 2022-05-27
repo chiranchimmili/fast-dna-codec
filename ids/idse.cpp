@@ -3,7 +3,7 @@
 #include <string>
 #include <random>
 #include <vector>
-#include "../include/idse.h"
+#include "../include/idse.hpp"
 #include "jsonParser.cpp"
 
 using namespace std;
@@ -13,7 +13,8 @@ vector<string> oligos;
 
 /* Creates vector of oligo number and respective oligo string from given input fafsta file
 */
-vector<string> generateOligosVector(ifstream &inFile) {
+vector<string> generateOligosVector() {
+    ifstream inFile;
     // Opens input FAFSTA file
     inFile.open(parser->input);         
     string line;
@@ -33,7 +34,7 @@ vector<string> generateOligosVector(ifstream &inFile) {
    by the user (in json)
 */
 int generateIdsType() {
-    double rnd = (double) randomIds(generator) / 100.0;
+    double rnd = (double) randomIdsDist(generator) / 100.0;
     // Map of indelsub error percentenages
     map<int, float> errorWeights = {
     {0, parser->insertErrorRate}, {1, parser->deleteErrorRate}, {2, parser->substitutionErrorRate}, 
@@ -87,8 +88,10 @@ string performIds(string str) {
 
 /* Creates ordered and unordered output files of oligo number and respective oligo string
 */
-void generateOutputFiles(ofstream &unorderedOutFile, ofstream &orderedOutFile, vector<string> oligos) {
+void generateOutputFiles(vector<string> oligos) {
     // Open unordered and ordered files
+    ofstream unorderedOutFile;
+    ofstream orderedOutFile;
     unorderedOutFile.open(parser->unorderedOutput, ios::out | ios::trunc);
     orderedOutFile.open(parser->orderedOutput, ios::out | ios::trunc);
     vector<pair<int, string>> ordered;

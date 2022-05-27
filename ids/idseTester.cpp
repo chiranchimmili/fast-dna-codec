@@ -11,15 +11,12 @@ using namespace std;
 int main() {
     parser->parseJSONFile("sample.json");
     generateRandomInputFile();
-
-    ifstream inFile;
-    ofstream unorderedOutFile;
-    ofstream orderedOutFile;
-
-    vector<string> populatedOligos = generateOligosVector(inFile);
-    generateOutputFiles(unorderedOutFile, orderedOutFile, populatedOligos);
+    vector<string> populatedOligos = generateOligosVector();
+    generateOutputFiles(populatedOligos);
 }
 
+/* Creates input file with randomized oligo strings of given number and length
+*/
 void generateRandomInputFile() {
     ofstream randomInFile;
     randomInFile.open(parser->input, ios::out | ios::trunc);
@@ -29,6 +26,8 @@ void generateRandomInputFile() {
     randomInFile.close();
 }
 
+/* Creates random oligo string
+*/
 string randomOligo() {
     string oligo = "";
     for (int i = 0; i < parser->lengthOligos; i++) {
