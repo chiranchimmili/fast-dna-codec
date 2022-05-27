@@ -9,7 +9,7 @@
 using namespace std;
 
 int main() {
-    parser->parseJSONFile("sample.json");
+    parser->parseJSONFile("../files/sample.json");
     generateRandomInputFile();
     vector<string> populatedOligos = generateOligosVector();
     generateOutputFiles(populatedOligos);

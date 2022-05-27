@@ -1,4 +1,4 @@
-#include "../include/json.hpp"
+#include "../lib/json.hpp"
 #include "../include/jsonParser.hpp"
 #include <iostream>
 #include <fstream>

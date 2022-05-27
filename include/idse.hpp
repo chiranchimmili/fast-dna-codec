@@ -1,6 +1,6 @@
 #include <map>
 #include <string>
-#include "../include/jsonParser.hpp"
+#include "jsonParser.hpp"
 #pragma once
 using namespace std;
 
