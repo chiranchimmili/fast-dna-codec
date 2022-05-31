@@ -14,7 +14,7 @@ private:
     json j;
 
 public:
-    string input;
+    string inputFileName;
     string unorderedOutput;
     string orderedOutput;
     double insertErrorRate;
@@ -23,6 +23,9 @@ public:
     int numberReads;
     int numberOligos;
     int lengthOligos;
+    
+    bool randomInput;
+    int numberSamples;
 
     void parseJSONFile(string file);
     void insertError();
@@ -32,6 +35,8 @@ public:
     void numOligos();
     void lenOligos();
     void inputFile();
+    void randInput();
+    void numSamples();
     void unorderedOutputFile();
     void orderedOutputFile();
     void setParameters();

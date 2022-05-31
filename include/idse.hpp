@@ -25,5 +25,6 @@ char bases[4] = {'A', 'T', 'C', 'G'};
 int generateIdsType();
 char randomBase();
 vector<string> generateOligosVector();
-void generateOutputFiles(vector<string> oligos);
+void generateUnorderedOutputFile(vector<string> oligos);
+void generateOrderedOutputFile(vector<string> oligos);
 string performIds(string str);

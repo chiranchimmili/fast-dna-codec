@@ -11,12 +11,13 @@ using namespace std;
 jsonParser *parser = new jsonParser();
 vector<string> oligos;
 
-/* Creates vector of oligo number and respective oligo string from given input fafsta file
+/*  Creates vector of oligo number and respective oligo string from given input fafsta file
+    Note: Input file should have oligos in increasing order
 */
 vector<string> generateOligosVector() {
     ifstream inFile;
-    // Opens input FAFSTA file
-    inFile.open(parser->input);         
+    // Opens input FASTA file
+    inFile.open(parser->inputFileName);         
     string line;
     // Scans each line and creates vector of oligos
     while (getline(inFile, line)) {     
@@ -36,10 +37,8 @@ vector<string> generateOligosVector() {
 int generateIdsType() {
     double rnd = (double) randomIdsDist(generator) / 100.0;
     // Map of indelsub error percentenages
-    map<int, float> errorWeights = {
-    {0, parser->insertErrorRate}, {1, parser->deleteErrorRate}, {2, parser->substitutionErrorRate}, 
-    {3, 1 - parser->insertErrorRate - parser->deleteErrorRate - parser->substitutionErrorRate}
-    };
+    map<int, float> errorWeights = { {0, parser->insertErrorRate}, {1, parser->deleteErrorRate}, {2, parser->substitutionErrorRate}, 
+    {3, 1 - parser->insertErrorRate - parser->deleteErrorRate - parser->substitutionErrorRate} };
     // Insert error
     if (rnd <= errorWeights[0]) {     
         return 0;
@@ -70,7 +69,7 @@ string performIds(string str) {
         // Delete error applied
         } else if (randIds == 1) {
             str.erase(i, 1);
-            i--;
+            i--;                             
         // Substitution error applied
         } else if (randIds == 2) {
             // Make sure substitution is not same base as old one
@@ -86,34 +85,51 @@ string performIds(string str) {
     return str;
 }
 
-/* Creates ordered and unordered output files of oligo number and respective oligo string
-*/
-void generateOutputFiles(vector<string> oligos) {
-    // Open unordered and ordered files
-    ofstream unorderedOutFile;
-    ofstream orderedOutFile;
-    unorderedOutFile.open(parser->unorderedOutput, ios::out | ios::trunc);
-    orderedOutFile.open(parser->orderedOutput, ios::out | ios::trunc);
-    vector<pair<int, string>> ordered;
-    uniform_int_distribution<int> randomOligo(0, parser->numberOligos - 1);
+// string performError(string str) {
+//     string newStr = ""; 
+// }
 
+/* Creates orderedMap and unordered output files of oligo number and respective oligo string
+*/
+void generateOrderedOutputFile(vector<string> oligos) {
+    // Open unordered and orderedMap files
+    ofstream orderedOutFile;
+    orderedOutFile.open(parser->orderedOutput, ios::out | ios::trunc);
+    unordered_map<int, string> orderedMap;
+    uniform_int_distribution<int> randomOligo(0, parser->numberOligos - 1);
     // Loop number of reads # of times
     for (int i = 0; i < parser->numberReads; i++) {
         // Randomly select oligo from oligos vector (akin to a sequencer selecing a random oligo in a DNA pool)
         int oligoNumber = randomOligo(generator);
-        // Get strin with indelsub errors
-        string errorStr = performIds(oligos[oligoNumber]);
-        // Maintain vector of oligos so we can create ordered output file
-        ordered.emplace_back(oligoNumber + 1, errorStr);
-        // Add random oligo to unordered output file
-        unorderedOutFile << ">" << (oligoNumber + 1) << "\n" << errorStr << endl;
+        // Get string with indelsub errors
+        if (orderedMap.find(oligoNumber) == orderedMap.end()) {
+            string errorStr = performIds(oligos[oligoNumber]);
+            orderedMap[oligoNumber] = errorStr;
+        }
     }
     // Sort unordered oligo vector
-    sort(ordered.begin(), ordered.end());
-    // Add each sorted oligo to ordered output file
-    for (int i = 0; i < ordered.size(); i++) {
-        orderedOutFile << ">" << ordered[i].first << "\n" << ordered[i].second << endl;
+    std::vector<std::pair<int, string>> elems(orderedMap.begin(), orderedMap.end());
+    std::sort(elems.begin(), elems.end());
+    // Add each sorted oligo to orderedMap output file
+    for (const auto & [key, value] : elems) {
+        orderedOutFile << ">" << key + 1 << "\n" << value << endl;
     }
-    unorderedOutFile.close();
     orderedOutFile.close();
+}
+
+void generateUnorderedOutputFile(vector<string> oligos) {
+    uniform_int_distribution<int> randomOligo(0, parser->numberOligos - 1);
+    for (int i = 1; i < parser->numberSamples + 1; i++) {
+        ofstream unorderedOutFile;
+        unorderedOutFile.open((parser->unorderedOutput).substr(0, (parser->unorderedOutput).size() - 7) + to_string(i) + ".fafsta", ios::out | ios::trunc);
+        for (int i = 0; i < parser->numberReads; i++) {
+            // Randomly select oligo from oligos vector (akin to a sequencer selecing a random oligo in a DNA pool)
+            int oligoNumber = randomOligo(generator);
+            // Get string with indelsub errors
+            string errorStr = performIds(oligos[oligoNumber]);
+            // Add random oligo to unordered output file
+            unorderedOutFile  << ">" << (oligoNumber + 1) << "\n" << errorStr << endl;
+        }
+        unorderedOutFile.close();
+    }
 }

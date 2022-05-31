@@ -10,16 +10,24 @@ using namespace std;
 
 int main() {
     parser->parseJSONFile("../files/sample.json");
-    generateRandomInputFile();
+    if (parser->randomInput) {
+        generateRandomInputFile();
+    }
     vector<string> populatedOligos = generateOligosVector();
-    generateOutputFiles(populatedOligos);
+
+    if (parser->unorderedOutput != "") {
+        generateUnorderedOutputFile(populatedOligos);
+    }
+    if (parser->orderedOutput != "") {
+        generateOrderedOutputFile(populatedOligos);
+    }
 }
 
 /* Creates input file with randomized oligo strings of given number and length
 */
 void generateRandomInputFile() {
     ofstream randomInFile;
-    randomInFile.open(parser->input, ios::out | ios::trunc);
+    randomInFile.open(parser->inputFileName, ios::out | ios::trunc);
     for (int i = 1; i < parser->numberOligos + 1; i++) {
         randomInFile << '>' << i << "\n" << randomOligo() << endl;
     }

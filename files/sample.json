@@ -10,10 +10,14 @@
           "numOligos": 300,
           "oligoLength": 200
         },
-      "files":
-        { "input": "../files/input.fafsta",
-          "unorderedOutput": "../files/unorderedOutput.fafsta",
-          "orderedOutput": "../files/orderedOutput.fafsta"
+      "input":
+        { "inputFileName": "../files/input.fasta",
+          "randomInput": true
+        }, 
+      "output":
+        { "numSamples": 1,
+          "orderedOutputFileName": "../files/orderedOutput.fasta",
+          "unorderedOutputFileName": "../files/unorderedOutput.fasta"
         }
   }
 }
