@@ -3,6 +3,10 @@
 #include <unordered_map>
 #include <cmath>
 
+
+int n; 
+std::vector<int> IP;
+
 int polynomialDegree(std::vector<int> polynomial) {
     int degree = polynomial.size() - 1;
     for (int i = 0; i < polynomial.size(); i++) {
@@ -60,7 +64,7 @@ struct VectorHasher {
         }
         return hash;
     }
-}
+};
 
 std::vector<int> incVector(std::vector<int> v, int length) {
     int a = length - 1;
@@ -72,7 +76,7 @@ std::vector<int> incVector(std::vector<int> v, int length) {
     return v;
 }
 
-std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> test(int n, std::vector<int> IP) {
+std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> multLookup() {
     int total = pow(2, n);
     std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> result;
     std::vector<int> x(n, 0);
@@ -88,14 +92,28 @@ std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::v
     }
     return result;
 }
-
+std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> divLookup(std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> mult) {
+    std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> div = mult;
+    int total = pow(2, n);
+    std::vector<int> x(n, 0);
+    for (int i = 0; i < total; i++) {
+        std::vector<int> y(n, 0);
+        for (int j = 0; j < total; j++) {
+            div[longDivision(IP, multiplyPolynomials(x, y))][x] = y;
+            y = incVector(y, n);
+        }
+        x = incVector(x, n);
+    }
+    return div;
+}
 
 int main() {
     std::vector<int> a{1, 0, 1, 1, 0, 0, 0, 1};
     std::vector<int> b{1, 1, 1, 1, 0, 1, 0, 0};
-    std::vector<int> IP{1, 0, 1, 1};
-    std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> e = test(2, IP);
- 
+    IP = {1, 0, 1, 1};
+    n = 2;
+    std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> mult = multLookup();
+    std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> div = divLookup(mult);
 
     // std::vector<int> c = e[a][b];
     // for (int &i : c) {
