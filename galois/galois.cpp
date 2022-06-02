@@ -37,9 +37,7 @@ std::vector<int> multiplyPolynomials(std::vector<int> a, std::vector<int> b) {
 std::vector<int> longDivision(std::vector<int> divisor, std::vector<int> dividend) {
     int divisorDegree = polynomialDegree(divisor);
     int dividendDegree = polynomialDegree(dividend);
-
-
-    int k = 0;
+    int originalDividendDegree = dividendDegree;
     while (divisorDegree <= dividendDegree) {
         std::vector<int> multipliedDivisor(dividend.size(), 0);
         for (int i = 0; i < divisor.size(); i++) {
@@ -49,9 +47,8 @@ std::vector<int> longDivision(std::vector<int> divisor, std::vector<int> dividen
             dividend[i] = multipliedDivisor[i] ^ dividend[i];
         }
         dividendDegree = polynomialDegree(dividend);
-        k++;
     }
-    std::vector<int> subvector = {dividend.begin() + 7, dividend.end()};
+    std::vector<int> subvector = {dividend.begin() + ((dividendDegree - divisorDegree) + 1), dividend.end()};
     return subvector;
 }
 
@@ -63,7 +60,7 @@ struct VectorHasher {
         }
         return hash;
     }
-};
+}
 
 std::vector<int> incVector(std::vector<int> v, int length) {
     int a = length - 1;
@@ -75,8 +72,7 @@ std::vector<int> incVector(std::vector<int> v, int length) {
     return v;
 }
 
-std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> test(int n) {
-    std::vector<int> divisor{1, 0, 0, 0, 1, 1, 0, 1, 1};
+std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> test(int n, std::vector<int> IP) {
     int total = pow(2, n);
     std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> result;
     std::vector<int> x(n, 0);
@@ -84,7 +80,7 @@ std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::v
         std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher> toAdd;
         std::vector<int> y(n, 0);
         for (int j = 0; j < total; j++) {
-            toAdd[y] = longDivision(divisor, multiplyPolynomials(x, y));
+            toAdd[y] = longDivision(IP, multiplyPolynomials(x, y));
             y = incVector(y, n);
         }
         result[x] = toAdd;
@@ -97,11 +93,14 @@ std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::v
 int main() {
     std::vector<int> a{1, 0, 1, 1, 0, 0, 0, 1};
     std::vector<int> b{1, 1, 1, 1, 0, 1, 0, 0};
-    std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> e = test(8);
-    std::vector<int> c = e[a][b];
-    for (int &i : c) {
-        std::cout << i << std::endl;
-    }
+    std::vector<int> IP{1, 0, 1, 1};
+    std::unordered_map<std::vector<int>, std::unordered_map<std::vector<int>, std::vector<int>, VectorHasher>, VectorHasher> e = test(2, IP);
+ 
+
+    // std::vector<int> c = e[a][b];
+    // for (int &i : c) {
+    //     std::cout << i << std::endl;
+    // }
     // std::vector<int> a{0, 1, 1, 0, 0, 1, 0, 1};
     // std::vector<int> b{1, 0, 1, 0, 1, 1, 0, 0};
     // std::vector<int> result = multiplyPolynomials(a, b);
