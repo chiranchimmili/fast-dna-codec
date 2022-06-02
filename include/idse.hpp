@@ -28,3 +28,4 @@ vector<string> generateOligosVector();
 void generateUnorderedOutputFile(vector<string> oligos);
 void generateOrderedOutputFile(vector<string> oligos);
 string performIds(string str);
+string performError(string str, int pos, int errorType, char base);

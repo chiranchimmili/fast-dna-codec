@@ -1,9 +1,11 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <random>
-#include <vector>
 #include "../include/idse.hpp"
+
+#include <fstream>
+#include <iostream>
+#include <random>
+#include <string>
+#include <vector>
+
 #include "jsonParser.cpp"
 
 using namespace std;
@@ -17,10 +19,10 @@ vector<string> oligos;
 vector<string> generateOligosVector() {
     ifstream inFile;
     // Opens input FASTA file
-    inFile.open(parser->inputFileName);         
+    inFile.open(parser->inputFileName);
     string line;
     // Scans each line and creates vector of oligos
-    while (getline(inFile, line)) {     
+    while (getline(inFile, line)) {
         if (!line.empty()) {
             if (line[0] != '>') {
                 oligos.push_back(line);
@@ -35,62 +37,61 @@ vector<string> generateOligosVector() {
    by the user (in json)
 */
 int generateIdsType() {
-    double rnd = (double) randomIdsDist(generator) / 100.0;
+    double rnd = (double)randomIdsDist(generator) / 100.0;
     // Map of indelsub error percentenages
-    map<int, float> errorWeights = { {0, parser->insertErrorRate}, {1, parser->deleteErrorRate}, {2, parser->substitutionErrorRate}, 
-    {3, 1 - parser->insertErrorRate - parser->deleteErrorRate - parser->substitutionErrorRate} };
+    map<int, float> errorWeights = {{0, parser->insertErrorRate}, {1, parser->deleteErrorRate}, {2, parser->substitutionErrorRate}, {3, 1 - parser->insertErrorRate - parser->deleteErrorRate - parser->substitutionErrorRate}};
     // Insert error
-    if (rnd <= errorWeights[0]) {     
+    if (rnd <= errorWeights[0]) {
         return 0;
     }
     // Delete error
-    else if (rnd > errorWeights[0] && rnd <= errorWeights[0] + errorWeights[1] ) {   
+    else if (rnd > errorWeights[0] && rnd <= errorWeights[0] + errorWeights[1]) {
         return 1;
     }
     // Substitution Error
     else if (rnd > errorWeights[0] + errorWeights[1] && rnd <= errorWeights[0] + errorWeights[1] + errorWeights[2]) {
-        return 2;  
+        return 2;
     }
     // No Error
-    return 3;    
+    return 3;
 }
 
 /* Performs insertion, deletion, and substitution on an oligo string (applied to each base)
-*/
+ */
 string performIds(string str) {
-    // Error applied to each base in oligo 
+    // Error applied to each base in oligo
+    string newStr = "";
     for (int i = 0; i < str.size(); i++) {
         int randIds = generateIdsType();
         char randBas = RANDOMBASE;
-        // Insert error applied
-        if (randIds == 0) {
-            str.insert(i, 1 , randBas);
-            i++;
+        newStr += performError(str.substr(i, 1), 0, randIds, randBas);
+    }
+    return newStr;
+}
+
+string performError(string str, int pos, int errorType, char base) {
+    // Insert error applied
+    if (errorType == 0) {
+        str.insert(pos, 1, base);
         // Delete error applied
-        } else if (randIds == 1) {
-            str.erase(i, 1);
-            i--;                             
+    } else if (errorType == 1) {
+        str.erase(pos, 1);
         // Substitution error applied
-        } else if (randIds == 2) {
-            // Make sure substitution is not same base as old one
-            while (randBas == str[i]) {
-                randBas = RANDOMBASE;
-            }
-            str[i] = randBas;
-        // No error applied
-        } else {
-            continue;
+    } else if (errorType == 2) {
+        if (pos == -1) {
+            return str + base;
         }
+        // Make sure substitution is not same base as old one
+        while (base == str[pos]) {
+            base = RANDOMBASE;
+        }
+        str[pos] = base;
     }
     return str;
 }
 
-// string performError(string str) {
-//     string newStr = ""; 
-// }
-
 /* Creates orderedMap and unordered output files of oligo number and respective oligo string
-*/
+ */
 void generateOrderedOutputFile(vector<string> oligos) {
     // Open unordered and orderedMap files
     ofstream orderedOutFile;
@@ -111,8 +112,9 @@ void generateOrderedOutputFile(vector<string> oligos) {
     std::vector<std::pair<int, string>> elems(orderedMap.begin(), orderedMap.end());
     std::sort(elems.begin(), elems.end());
     // Add each sorted oligo to orderedMap output file
-    for (const auto & [key, value] : elems) {
-        orderedOutFile << ">" << key + 1 << "\n" << value << endl;
+    for (const auto &[key, value] : elems) {
+        orderedOutFile << ">" << key + 1 << "\n"
+                       << value << endl;
     }
     orderedOutFile.close();
 }
@@ -128,7 +130,8 @@ void generateUnorderedOutputFile(vector<string> oligos) {
             // Get string with indelsub errors
             string errorStr = performIds(oligos[oligoNumber]);
             // Add random oligo to unordered output file
-            unorderedOutFile  << ">" << (oligoNumber + 1) << "\n" << errorStr << endl;
+            unorderedOutFile << ">" << (oligoNumber + 1) << "\n"
+                             << errorStr << endl;
         }
         unorderedOutFile.close();
     }
