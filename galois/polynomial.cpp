@@ -50,7 +50,7 @@ std::vector<int> longDivision(std::vector<int> divisor, std::vector<int> dividen
         }
         dividendDegree = polynomialDegree(dividend);
     }
-    std::vector<int> subvector = {dividend.begin() + ((dividendDegree - divisorDegree) + 1), dividend.end()};
+    std::vector<int> subvector = {dividend.begin() + ((originalDividendDegree - divisorDegree) + 1), dividend.end()};
     return subvector;
 }
 
