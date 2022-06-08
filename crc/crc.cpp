@@ -78,30 +78,37 @@
 //     } 
 // }
 
-
-
-
-
 int main() {
 
     uint8_t messageArray[] = {0x92, 0xa3, 0x11, 0xb7, 0x93, 0xe4, 0xab, 0xb3, 0x2f, 0xda, 0x90, 0x5d, 0x44, 0xbb, 0x4d, 0x33, 0x2a, 0xc3, 0xd1, 0xdc};
-    uint8_t divisionArray[20] = {0x0};
+    uint8_t divisionArray[5] = {0x0};
 
-    uint8_t genPoly[] = {0x1, 0x0, 0x0, 0x1};
+    uint8_t genPoly[] = {0x1, 0x0, 0x0, 0x1, 0x1}; // x^4 + x + 1
 
     Galois::G256 field;
-    for (int i = 0; i < 16; i++) {
-        Galois::Elem a(&field, messageArray[i]);
-        Galois::Elem b(&field, divisionArray[i]);
-        divisionArray[i] = (a - b).val;
-        
-        for (int j = 0; j < 4; j++) {
-            Galois::Elem d(&field, genPoly[j]);
-            Galois::Elem e(&field, divisionArray[i]);
-            if (d.val != 0) {
-                uint8_t div = (e / d).val;
-                divisionArray[i + j] = div;
+    for (int i = 0; i < 17; i++) {
+        for (int k = 0; k < 5; k++) {
+            if (i > 0) {
+                Galois::Elem a(&field, messageArray[i + k - 1]);
+                Galois::Elem b(&field, divisionArray[k]);
+                messageArray[i + k - 1] = (a - b).val;
             }
         }
+
+        for (int m = 0; m < 5; m++) {
+            divisionArray[m] = 0;
+        }
+
+        for (int j = 0; j < 5; j++) {
+            Galois::Elem d(&field, genPoly[j]);
+            Galois::Elem e(&field, messageArray[i]);
+            if (d.val != 0) {
+                uint8_t div = (e / d).val;
+                divisionArray[j] = div;
+            }
+        }
+    }
+    for (uint8_t m : messageArray) {
+        std::cout << unsigned(m) << std::endl;
     }
  }
