@@ -1,4 +1,4 @@
-#include "G256.hpp"
+#include "../include/G256.hpp"
 #include <iostream>
 #include <vector>
 typedef unsigned char u8;
