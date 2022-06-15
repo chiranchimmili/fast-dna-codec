@@ -16,24 +16,24 @@ std::uniform_int_distribution<int> randomNum(0, 255);
 
 void crc(Galois::G256 *field, std::vector<uint8_t> *message, std::vector<uint8_t> *genPoly) {
     std::vector<uint8_t> retVec = *message;
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 18; i++) {
         Galois::Elem a(field, retVec[i]);
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 3; j++) {
             Galois::Elem b(field, (*genPoly)[j]);
             Galois::Elem c(field, retVec[i + j]);
             Galois::Elem d(field, (a * b).val);
             retVec[i + j] = (c - d).val;
         }
     }
-    for (int i = 0; i < 4; i++) {
-        message->push_back(retVec[16 + i]);
+    for (int i = 0; i < 2; i++) {
+        message->push_back(retVec[18 + i]);
     }
 }
 
 int main() {
     std::vector<uint8_t> messageArray{0x92, 0xa3, 0x11, 0xb7, 0x93, 0xe4, 0xab, 0xb3, 0x2f, 0xda, 0x90, 0x5d, 0x44, 0xbb, 0x4d, 0x33, 0x2a, 0xc3, 0xd1, 0xdc};
     // std::vector<uint8_t> randomMsgWithCRC{0x92, 0xa3, 0x11, 0xb7, 0x93, 0xe4, 0xab, 0xb3, 0x2f, 0xda, 0x90, 0x5d, 0x44, 0xbb, 0x4d, 0x33, 0x2a, 0xc3, 0xd1, 0xdc};
-    std::vector<uint8_t> genPoly{0x1, 0x0f, 0x36, 0x78, 0x40}; 
+    std::vector<uint8_t> genPoly{0x1, 0x03, 0x02}; 
     Galois::G256 field;
     crc(&field, &messageArray, &genPoly);
     
