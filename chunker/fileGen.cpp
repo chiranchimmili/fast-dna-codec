@@ -20,6 +20,13 @@ void generateFile(int numberBytes) {
     file.close();
 }
 
-int main() {
-    generateFile(10000);
+std::string readFile(std::string fileName) {
+    std::ifstream file;
+    file.open(fileName);
+
+    // Assuming input file will be one continous string of bytes
+    std::string line;
+    getline(file, line);
+    file.close();
+    return line;
 }
