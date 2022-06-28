@@ -16,7 +16,7 @@ std::vector<std::vector<std::vector<uint8_t>>> chunker(int numCheckSyms, int inn
     // even though this won't be the case moving forward.
     int dataBytes = 255 - numCheckSyms;
     int outerChunkSize = dataBytes * innerChunkSize;
-
+    fileSize = line.size();
     // Pad with zeros until all chunks will be of even size
     // Will optimize below to insert zeros all at once
     while (line.size() % outerChunkSize != 0) {
@@ -46,7 +46,6 @@ std::vector<std::vector<std::vector<uint8_t>>> chunker(int numCheckSyms, int inn
                 // j = inner codeword length
                 for (int i = 0; i < 255; i++) {
                     chunk[i][j] = encodedVec[k + (j * 255) + i];
-                    fileSize++;
                 }
             }
         };
@@ -91,27 +90,39 @@ void dechunker(int numCheckSyms, int innerChunkSize, int padding, std::vector<st
         newChunks.push_back(chunk);
     }
 
+    std::vector<uint8_t> encodedVec;
+    for (std::vector<std::vector<uint8_t>> chunk : newChunks) {
+        for (std::vector<uint8_t> outerCodeword : chunk) {
+            for (uint8_t byte : outerCodeword) {
+                encodedVec.push_back(byte);
+            }
+        }
+    }
+    
+    schifra::reed_solomon::erasure_locations_t erasures;
+    outerDecoder(encodedVec, erasures);
+
     std::ofstream file3;
     file3.open("../files/dechunked2.txt");
 
-    int count = 0;
+    int total = 0;
     for (std::vector<std::vector<uint8_t>> chunk : newChunks) {
         for (std::vector<uint8_t> outerCodeword : chunk) {
             int outerCount = 1;
             for (uint8_t byte : outerCodeword) {
-                if (count >= fileSize - padding) {
-                    goto end;
+                if (total >= fileSize) {
+                    file3.close();
+                    return;
                 }
                 if (outerCount > 205) {
                     break;
                 }
                 file3 << byte;
-                count++;
+                total++;
                 outerCount++;
             }
         }
     }
-end: file3.close();
 }
 
 void compareFiles(std::string file1, std::string file2) {
